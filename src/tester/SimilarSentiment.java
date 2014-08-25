@@ -26,9 +26,9 @@ public class SimilarSentiment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(np == null){
+		if(np != null){
 			np.buildTree();
-			ArrayList<String> result = np.getSimilarSentimentWords("gud");
+			ArrayList<String> result = np.getSimilarSentimentWords("some");
 			if(result != null){
 				for(String simWord : result){
 					System.out.print(simWord + " ");
