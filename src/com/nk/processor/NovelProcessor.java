@@ -4,10 +4,12 @@
 package com.nk.processor;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.nk.analyser.SentimentAnalyser;
 import com.nk.novel.Novel;
 import com.nk.novel.storage.Trie;
 import com.nk.novel.storage.WordStore;
@@ -22,21 +24,24 @@ public class NovelProcessor {
 	
 	private TextProcessorHelper TxtHelper;
 	
-	private WordStore trie;
+	private WordStore tree;
 	
 	private WordGrouper wordGrouper;
+	
+	private SentimentAnalyser sentiAnalyser;
 	
 	public NovelProcessor(String novelName, String NovelUrl) throws MalformedURLException{
 		novel = new Novel();
 		novel.setNoveUrl(NovelUrl);
-		trie = new Trie(novelName);
+		tree = new Trie(novelName);
 		wordGrouper = null;
+		sentiAnalyser = null;
 	}
 	
 	/*
-	 *  Builds Trie 
+	 *  Builds Word Stroage
 	 */
-	public void buildTrie(){
+	public void buildTree(){
 		String[] wordsInNovel = null;
 		if(TxtHelper == null){
 			TxtHelper = new TextProcessorHelper();
@@ -50,10 +55,10 @@ public class NovelProcessor {
 		if(wordsInNovel == null){
 			return;
 		}
-		for (String word : wordsInNovel) { // store words in the trie structure
+		for (String word : wordsInNovel) { // store words in the Storage structure
 			word = TxtHelper.removePunctuation(word);
 			if(word != null && word != ""){
-				trie.addWord(word);
+				tree.addWord(word);
 			}
 		}
 	}
@@ -66,8 +71,7 @@ public class NovelProcessor {
 			return null;
 		}
 		input = input.toLowerCase();
-		ArrayList<String> similarWords = trie.wordsSimilarTo(input);
-		return similarWords;
+		return tree.wordsSimilarTo(input);
 	}
 	
 	/*
@@ -75,9 +79,21 @@ public class NovelProcessor {
 	 */
 	public Set<ArrayList<String>> getAllSimilarGroups(){
 		if(wordGrouper == null){
-			wordGrouper = new WordGrouper(trie.getWordsGroupedByLen());
+			wordGrouper = new WordGrouper(tree.getWordsGroupedByLen());
 		}
 		return wordGrouper.groupSimilarWords();
+	}
+	
+	/*
+	 * Returns list of similar words for given input which fall in same category as input
+	 */
+	public ArrayList<String> getSimilarSentimentWords(String input){
+		ArrayList<String> result = this.getSimilarWords(input);
+		if(sentiAnalyser == null){
+			sentiAnalyser = new SentimentAnalyser();
+		}
+		sentiAnalyser.filterDiffSentiWords(input, result);
+		return result;
 	}
 
 }

@@ -25,16 +25,19 @@ public class WordGrouper {
 	public Set<ArrayList<String>> groupSimilarWords(){
 		Set<ArrayList<String>> similarGroups = new HashSet<ArrayList<String>>();
 		
-		for(int i=1; i<=20; i++){
-			ArrayList<String> currLenWordList = wordMap.get(i);
+		for(int wordLen=1; wordLen<=20; wordLen++){
+			ArrayList<String> currLenWordList = wordMap.get(wordLen);
 			if(currLenWordList == null){
-				break;
+				continue;
 			}
 			int listLen = currLenWordList.size();
-			for(int j=0; j<listLen; i++){
+			for(int wordIdx=0; wordIdx < listLen; wordIdx++){
 				ArrayList<String> resultList = new ArrayList<String>();
-				resultList.add(currLenWordList.get(j));
-				similarWordsAhead(currLenWordList.get(j), i, j, resultList);
+				resultList.add(currLenWordList.get(wordIdx));
+				similarWordsAhead(wordLen, wordIdx, resultList);
+				if(resultList.size() > 1){
+					similarGroups.add(resultList);
+				}
 			}
 		}
 		return similarGroups;
@@ -42,18 +45,27 @@ public class WordGrouper {
 	
 	/*
 	 * Recursive helper form the grouping similar words
+	 * 
+	 * Group hold words which are mutually similar to each other.
 	 */
-	private void similarWordsAhead(String thisWord, int thisLen, int thisIndex, ArrayList<String> resultList){
-		for(int i=thisLen; i < thisLen+2; i++){
+	private void similarWordsAhead(int wordLen, int wordIdx, ArrayList<String> resultList){
+		for(int i=wordLen; i < wordLen+2; i++){
 			ArrayList<String> currLenWordList = wordMap.get(i);
-			for(int j=thisIndex+1; j<currLenWordList.size(); i++){
+			if(currLenWordList == null){
+				continue;
+			}
+			for(int j=wordIdx+1; j<currLenWordList.size(); j++){
+				String thisWord = currLenWordList.get(j);
 				if(isMutuallySimilar(thisWord, resultList)){
-					resultList.add(currLenWordList.get(j));
+					resultList.add(thisWord);
 				}
 			}
 		}
 	}
 	
+	/*
+	 * Returns true if the input word is similar to all other words
+	 */
 	private boolean isMutuallySimilar(String word, ArrayList<String> resultList){
 		for(String otherWord : resultList){
 			if(WordUtil.leastBoundEditDistance(word, otherWord) > 1){

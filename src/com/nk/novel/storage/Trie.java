@@ -60,15 +60,19 @@ public class Trie extends WordStore{
 	 * Ignores words which are 2 or more chars bigger in length than input word.
 	 */
 	private void similarWordRecur(TrieNode node, String input, ArrayList<String> result, String trieWord){
+		if( trieWord.length()-input.length() >= 1){//No deeper word can be similar
+			return;
+		}
+		if(trieWord.length() > 2 && WordUtil.leastBoundEditDistance(trieWord, input.substring(0, trieWord.length())) > 2){
+			return;
+		}
+		
 		if(WordUtil.absDiff(trieWord.length(), input.length()) < 2){
 			if(node.isWord()){
 				if(WordUtil.leastBoundEditDistance(input, trieWord) == 1){
 					result.add(trieWord);
 				}
 			}
-		}
-		else if(trieWord.length()-input.length() >= 1){//No word deeper can be similar
-			return;
 		}
 		
 		TrieNode[] children = node.getChildren();
@@ -85,7 +89,7 @@ public class Trie extends WordStore{
 	@Override
 	public Map<Integer, ArrayList<String>> getWordsGroupedByLen(){
 		Map<Integer, ArrayList<String>> mapOfLists = new HashMap<Integer, ArrayList<String>>();
-		groupWordsRecur(root, mapOfLists, 1, "");
+		groupWordsRecur(root, mapOfLists, 0, "");
 		return mapOfLists;
 	}
 	

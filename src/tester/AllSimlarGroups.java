@@ -20,9 +20,10 @@ public class AllSimlarGroups {
 		// TODO Auto-generated method stub
 
 		NovelProcessor np = new NovelProcessor("Alice", "http://fiction.eserver.org/novels/alice_in_wonderland.html");
-		np.buildTrie();
+		np.buildTree();
 		Set<ArrayList<String>> similarGroups = np.getAllSimilarGroups();
 		for(ArrayList<String> wordList : similarGroups){
+			if(wordList == null) continue;
 			for(String word : wordList){
 				System.out.print(word+" ");
 			}

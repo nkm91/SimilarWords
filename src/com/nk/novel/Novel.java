@@ -44,10 +44,11 @@ public class Novel {
 	/*
 	 * Stores Novel text
 	 */
-	private void storeSiteText() throws IOException{
-		//String htmlContent = fetchSiteContents();
-		//Document doc = Jsoup.parse(htmlContent); 
-		novelText = "ge get wet set met et be we no ewrh e"; //doc.body().text();
+	private void cacheSiteText() throws IOException{
+		String htmlContent = fetchSiteContents();
+		Document doc = Jsoup.parse(htmlContent); 
+		novelText = doc.body().text();	
+		//novelText = "get pet set ";
 	}
 	
 	/*
@@ -55,7 +56,7 @@ public class Novel {
 	 */
 	public String getSiteText() throws IOException{
 		if(novelText == null){
-			storeSiteText();
+			cacheSiteText();
 		}
 		return novelText;
 	}
